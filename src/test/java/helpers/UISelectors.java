@@ -1,13 +1,16 @@
-package utils;
+package uiTests.helpers;
 
-import org.junit.Test;
 import org.openqa.selenium.By;
+import uiTests.VerifySearchResults;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
+
 public class UISelectors {
+
+    VerifySearchResults verifySearchResultsTest = new VerifySearchResults();
 
     //HomePage
     public By expectedHomepageElement = By.xpath(xpathGenerator("aria-label", "Airbnb Homepage"));
@@ -15,10 +18,10 @@ public class UISelectors {
     public By locationSearchFirstResult_Homepage = By.xpath(xpathGenerator("data-testid", "option-0"));
     public By checkInButton_Homepage = By.xpath(xpathGenerator("data-testid", "structured-search-input-field-split-dates-0"));
     public By calendarButton_CheckInHomepage = By.xpath(xpathGenerator("id", "tab--tabs--0"));
-    public By pickChooseCheckInDate_Homepage = getDateAfterNWeeksFromNow(1, true, false);
-    public By pickChooseCheckOutDate_Homepage = getDateAfterNWeeksFromNow(2, false, false);
-    public By pickSelectCheckInDate_Homepage = getDateAfterNWeeksFromNow(1, true, true);
-    public By pickSelectCheckOutDate_Homepage = getDateAfterNWeeksFromNow(2, false, true);
+    public By pickChooseCheckInDate_Homepage = getDateAfterNWeeksFromNow(verifySearchResultsTest.checkInAfterWeeks, true, false);
+    public By pickChooseCheckOutDate_Homepage = getDateAfterNWeeksFromNow(verifySearchResultsTest.checkOutAfterWeeks, false, false);
+    public By pickSelectCheckInDate_Homepage = getDateAfterNWeeksFromNow(verifySearchResultsTest.checkInAfterWeeks, true, true);
+    public By pickSelectCheckOutDate_Homepage = getDateAfterNWeeksFromNow(verifySearchResultsTest.checkOutAfterWeeks, false, true);
     public By exactDatesButton_CheckInHomepage = By.xpath(xpathGenerator("aria-label", "Exact dates"));
     public By guestsButton_Homepage = By.xpath(xpathGenerator("data-testid", "structured-search-input-field-guests-button"));
     public By adultsLabel_GuestsHomePage = By.xpath(xpathGenerator("id", "searchFlow-title-label-stepper-adults"));
@@ -31,7 +34,8 @@ public class UISelectors {
     //Search results page
     public By searchResultsBar_searchResultsPage = By.xpath("//*[@data-testid='little-search']/button/span");
     public By searchResultsBarValues_searchResultsPage = By.xpath("//*[@data-testid='little-search']/button/div");
-
+    String searchResultsInformation = "//*[@data-testid='shimmer-legacy-listing-section-item']/following::div//*[contains(text(), '%s')]";
+    public By searchResultsGuests_searchResultsPage = By.xpath(String.format(searchResultsInformation, "guests"));
 
     /**
      * Method to build and return By Value for date selection criteria
