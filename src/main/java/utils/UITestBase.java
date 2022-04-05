@@ -10,15 +10,19 @@ public class UITestBase {
     public WebDriver driver;
     public WebDriverWait wait;
 
+    Environment environment = new Environment();
     /**
      * Base Selenium Initializations method
      */
     public void seleniumConfig() {
+        environment.variables(Environment.currentEnvironment);
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         driver = new ChromeDriver(options);
-        wait = new WebDriverWait(driver, 5);
+        wait = new WebDriverWait(driver, 20);
         driver.manage().window().maximize();
+        driver.get(environment.baseWebsiteURL + "");
+
     }
 
 

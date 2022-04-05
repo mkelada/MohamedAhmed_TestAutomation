@@ -1,4 +1,4 @@
-package uiTests.helpers;
+package helpers;
 
 import org.openqa.selenium.By;
 import uiTests.VerifySearchResults;
@@ -6,11 +6,10 @@ import uiTests.VerifySearchResults;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import static uiTests.VerifySearchResults.*;
 
 
 public class UISelectors {
-
-    VerifySearchResults verifySearchResultsTest = new VerifySearchResults();
 
     //HomePage
     public By expectedHomepageElement = By.xpath(xpathGenerator("aria-label", "Airbnb Homepage"));
@@ -18,10 +17,6 @@ public class UISelectors {
     public By locationSearchFirstResult_Homepage = By.xpath(xpathGenerator("data-testid", "option-0"));
     public By checkInButton_Homepage = By.xpath(xpathGenerator("data-testid", "structured-search-input-field-split-dates-0"));
     public By calendarButton_CheckInHomepage = By.xpath(xpathGenerator("id", "tab--tabs--0"));
-    public By pickChooseCheckInDate_Homepage = getDateAfterNWeeksFromNow(verifySearchResultsTest.checkInAfterWeeks, true, false);
-    public By pickChooseCheckOutDate_Homepage = getDateAfterNWeeksFromNow(verifySearchResultsTest.checkOutAfterWeeks, false, false);
-    public By pickSelectCheckInDate_Homepage = getDateAfterNWeeksFromNow(verifySearchResultsTest.checkInAfterWeeks, true, true);
-    public By pickSelectCheckOutDate_Homepage = getDateAfterNWeeksFromNow(verifySearchResultsTest.checkOutAfterWeeks, false, true);
     public By exactDatesButton_CheckInHomepage = By.xpath(xpathGenerator("aria-label", "Exact dates"));
     public By guestsButton_Homepage = By.xpath(xpathGenerator("data-testid", "structured-search-input-field-guests-button"));
     public By adultsLabel_GuestsHomePage = By.xpath(xpathGenerator("id", "searchFlow-title-label-stepper-adults"));
@@ -45,7 +40,7 @@ public class UISelectors {
      * @param isSelected boolean value to choose to return chosen or selected date
      * @return By value to locate the element
      */
-    private By getDateAfterNWeeksFromNow(int weeks, boolean isStart, boolean isSelected) {
+    public By getDateAfterNWeeksFromNow(int weeks, boolean isStart, boolean isSelected) {
         String chooseStart = "Choose %s, %s %s, %s as your start date. It's available.",
                 chooseEnd = "Choose %s, %s %s, %s as your end date. It's available.",
                 selectedStart = "Selected start date. %s, %s %s, %s",

@@ -3,12 +3,9 @@ package helpers;
 import org.openqa.selenium.*;
 import utils.Environment;
 import utils.UITestBase;
-import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class UIHelper extends UITestBase {
 
@@ -31,19 +28,6 @@ public class UIHelper extends UITestBase {
         driver.quit();
     }
 
-    public void takeScreenShot(String testName) throws IOException {
-
-        String fileWithPath = new File(System.getProperty("user.dir")).getAbsolutePath() + "/src/test/resources/Screenshots/";
-        //Convert web driver object to TakeScreenshot
-        File SrcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-        //Move image file to new destination
-        File DestFile = new File(fileWithPath + testName + ".png");
-        //Copy file at destination
-        FileUtils.copyFile(SrcFile, DestFile);
-        //to appear in index.html / testng report
-//        Reporter.log("<a href='" + DestFile.getAbsolutePath() + "'> <img src='" + DestFile.getAbsolutePath() + "' height='100' width='100'/> </a>");
-    }
-
     /**
      * Method to perform actions on element
      *
@@ -55,6 +39,7 @@ public class UIHelper extends UITestBase {
     public String actionsOnElementByXpath(By element, elementsActions actions, String... textOrClicks) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(element));
         WebElement Element = driver.findElement(element);
+        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
         if (actions.equals(elementsActions.CLICK)) {
             wait.until(ExpectedConditions.elementToBeClickable(element));
             if (textOrClicks.length > 0) {
@@ -65,14 +50,12 @@ public class UIHelper extends UITestBase {
                 Element.click();
             }
         } else if (actions.equals(elementsActions.SEND_KEYS)) {
-            wait.until(ExpectedConditions.elementToBeClickable(element));
             Element.sendKeys(textOrClicks);
         } else if (actions.equals(elementsActions.HOVER)) {
 //put here
         } else if (actions.equals(elementsActions.GET_TEXT)) {
             return Element.getText();
         } else if (actions.equals(elementsActions.CLEAR_Text)) {
-            wait.until(ExpectedConditions.elementToBeClickable(element));
             Element.clear();
         }
         return null;
@@ -104,6 +87,7 @@ public class UIHelper extends UITestBase {
     }
 
     public boolean validateURL(String expectedText){
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         return driver.getCurrentUrl().contains(expectedText);
     }
 
