@@ -6,6 +6,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.concurrent.TimeUnit;
+
 public class UITestBase {
     public WebDriver driver;
     public WebDriverWait wait;
@@ -19,10 +21,8 @@ public class UITestBase {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         driver = new ChromeDriver(options);
-        wait = new WebDriverWait(driver, 20);
+        wait = new WebDriverWait(driver, 5);
         driver.manage().window().maximize();
-        driver.get(environment.baseWebsiteURL + "");
-
     }
 
 

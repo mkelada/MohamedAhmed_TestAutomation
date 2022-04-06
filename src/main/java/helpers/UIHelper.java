@@ -1,9 +1,11 @@
 package helpers;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import utils.Environment;
 import utils.UITestBase;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -32,15 +34,15 @@ public class UIHelper extends UITestBase {
      * Method to perform actions on element
      *
      * @param element      By selector to locate the element
-     * @param actions      Enum values for the needed action
+     * @param uiActions    Enum values for the needed action
      * @param textOrClicks optional parameter for the String need to be written (if choose SendKeys action)
      *                     or the number of clicks on the same element (if choose Click action)
      */
-    public String actionsOnElementByXpath(By element, elementsActions actions, String... textOrClicks) {
+    public String actionsOnElementByXpath(By element, elementsActions uiActions, String... textOrClicks) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(element));
         WebElement Element = driver.findElement(element);
-        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
-        if (actions.equals(elementsActions.CLICK)) {
+        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+        if (uiActions.equals(elementsActions.CLICK)) {
             wait.until(ExpectedConditions.elementToBeClickable(element));
             if (textOrClicks.length > 0) {
                 for (int i = 0; i < Integer.parseInt(textOrClicks[0]); i++) {
@@ -49,19 +51,27 @@ public class UIHelper extends UITestBase {
             } else {
                 Element.click();
             }
-        } else if (actions.equals(elementsActions.SEND_KEYS)) {
-            Element.sendKeys(textOrClicks);
-        } else if (actions.equals(elementsActions.HOVER)) {
-//put here
-        } else if (actions.equals(elementsActions.GET_TEXT)) {
-            return Element.getText();
-        } else if (actions.equals(elementsActions.CLEAR_Text)) {
+        } else if (uiActions.equals(elementsActions.SEND_KEYS)) {
             Element.clear();
+            driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+            Element.sendKeys(textOrClicks);
+        } else if (uiActions.equals(elementsActions.HOVER)) {
+            Actions actions = new Actions(driver);
+            actions.moveToElement(Element).perform();
+        } else if (uiActions.equals(elementsActions.SCROLL_DOWN)) {
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].scrollIntoView();", Element);
+        } else if (uiActions.equals(elementsActions.GET_TEXT)) {
+            return Element.getText();
+        } else if (uiActions.equals(elementsActions.CLEAR_Text)) {
+            Element.clear();
+        } else if (uiActions.equals(elementsActions.GET_STYLE)) {
+            return Element.getAttribute("style");
         }
         return null;
     }
 
-    public List<WebElement> getElementsTexts(By element){
+    public List<WebElement> getElementsTexts(By element) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(element));
         return driver.findElements(element);
     }
@@ -86,7 +96,7 @@ public class UIHelper extends UITestBase {
         return driver.findElement(element).isDisplayed();
     }
 
-    public boolean validateURL(String expectedText){
+    public boolean validateURL(String expectedText) {
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         return driver.getCurrentUrl().contains(expectedText);
     }
@@ -96,6 +106,8 @@ public class UIHelper extends UITestBase {
         SEND_KEYS,
         HOVER,
         GET_TEXT,
-        CLEAR_Text
+        CLEAR_Text,
+        GET_STYLE,
+        SCROLL_DOWN
     }
 }

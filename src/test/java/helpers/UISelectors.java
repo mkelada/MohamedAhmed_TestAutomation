@@ -1,13 +1,9 @@
 package helpers;
 
 import org.openqa.selenium.By;
-import uiTests.VerifySearchResults;
-
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Locale;
-import static uiTests.VerifySearchResults.*;
-
 
 public class UISelectors {
 
@@ -17,6 +13,7 @@ public class UISelectors {
     public By locationSearchFirstResult_Homepage = By.xpath(xpathGenerator("data-testid", "option-0"));
     public By checkInButton_Homepage = By.xpath(xpathGenerator("data-testid", "structured-search-input-field-split-dates-0"));
     public By calendarButton_CheckInHomepage = By.xpath(xpathGenerator("id", "tab--tabs--0"));
+    public By nextButtonInCalendar_CheckInHomePage = By.xpath("(//*[@aria-label='Next'])[1]");
     public By exactDatesButton_CheckInHomepage = By.xpath(xpathGenerator("aria-label", "Exact dates"));
     public By guestsButton_Homepage = By.xpath(xpathGenerator("data-testid", "structured-search-input-field-guests-button"));
     public By adultsLabel_GuestsHomePage = By.xpath(xpathGenerator("id", "searchFlow-title-label-stepper-adults"));
@@ -27,10 +24,19 @@ public class UISelectors {
     public By searchButton_Homepage = By.xpath("//*[text()='Search']/parent::div/parent::span/parent::button");
 
     //Search results page
-    public By searchResultsBar_searchResultsPage = By.xpath("//*[@data-testid='little-search']/button/span");
-    public By searchResultsBarValues_searchResultsPage = By.xpath("//*[@data-testid='little-search']/button/div");
-    String searchResultsInformation = "//*[@data-testid='shimmer-legacy-listing-section-item']/following::div//*[contains(text(), '%s')]";
+    public By searchResultsBar_searchResultsPage = By.xpath(xpathGenerator("data-testid", "little-search", "/button/span"));
+    public By searchResultsBarValues_searchResultsPage = By.xpath(xpathGenerator("data-testid", "little-search", "/button/div"));
+    String searchResultsInformation = xpathGenerator("data-testid", "shimmer-legacy-listing-section-item", "/following::div//*[contains(text(), '%s')]");
     public By searchResultsGuests_searchResultsPage = By.xpath(String.format(searchResultsInformation, "guests"));
+    public String searchResultsPricesInProperties_searchResultsPage = "//*[contains(text(),'$') and contains(text(),'%s')]";
+    public String priceOfPropertyToHover_searchResultsPage = "(//*[text()='%s'])[1]/parent::div";
+
+    //Map
+    public String priceOfPropertyToHover_map = "(//*[text()='%s'])[2]/parent::div/parent::div";
+    public String containerOfPriceOfPropertyToHover_map = "(//*[text()='%s'])[2]/parent::div/parent::div/parent::div";
+    public String buttonsOfCards_map = "(//*[@data-veloute='map/markers/BasePillMarker'])[%s]";
+    public By pricesOfCards_map = By.xpath(xpathGenerator("data-veloute","map/markers/BasePillMarker", "/div/div/div/span"));
+    public By anyWhereOnTheMap = By.xpath(xpathGenerator("aria-roledescription", "map","/parent::div/parent::div"));
 
     /**
      * Method to build and return By Value for date selection criteria
@@ -74,8 +80,11 @@ public class UISelectors {
         }
     }
 
-    private String xpathGenerator(String attributeName, String attributeValue) {
-        return String.format("//*[@%s=\"%s\"]", attributeName, attributeValue);
+    private String xpathGenerator(String attributeName, String attributeValue, String... concatenateText) {
+        if (concatenateText.length == 0)
+            return String.format("//*[@%s=\"%s\"]", attributeName, attributeValue);
+        else
+            return String.format("//*[@%s=\"%s\"]%s", attributeName, attributeValue, concatenateText[0]);
     }
 
     public String searchResultsDateValidator(int checkInAfterWeeks, int checkOutAfterWeeks) {

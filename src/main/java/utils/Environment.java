@@ -4,9 +4,6 @@ public class Environment {
 
 
 	public static environment currentEnvironment = environment.PROD;
-	public static boolean printALL = true;
-	public static String userToken;
-	public static String cpCookie;
 
 	public String baseAPIsURL, baseWebsiteURL;
 
