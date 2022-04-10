@@ -1,6 +1,7 @@
-package helpers;
+package utils;
 
 import org.openqa.selenium.By;
+
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Locale;
@@ -28,6 +29,7 @@ public class UISelectors {
     public By searchResultsBarValues_searchResultsPage = By.xpath(xpathGenerator("data-testid", "little-search", "/button/div"));
     String searchResultsInformation = xpathGenerator("data-testid", "shimmer-legacy-listing-section-item", "/following::div//*[contains(text(), '%s')]");
     public By searchResultsGuests_searchResultsPage = By.xpath(String.format(searchResultsInformation, "guests"));
+    public String firstSearchResultInProperties_searchResultsPage = "(//*[@itemprop='itemListElement'])[1]";
     public String searchResultsPricesInProperties_searchResultsPage = "//*[contains(text(),'$') and contains(text(),'%s')]";
     public String priceOfPropertyToHover_searchResultsPage = "(//*[text()='%s'])[1]/parent::div";
 
@@ -35,8 +37,12 @@ public class UISelectors {
     public String priceOfPropertyToHover_map = "(//*[text()='%s'])[2]/parent::div/parent::div";
     public String containerOfPriceOfPropertyToHover_map = "(//*[text()='%s'])[2]/parent::div/parent::div/parent::div";
     public String buttonsOfCards_map = "(//*[@data-veloute='map/markers/BasePillMarker'])[%s]";
-    public By pricesOfCards_map = By.xpath(xpathGenerator("data-veloute","map/markers/BasePillMarker", "/div/div/div/span"));
-    public By anyWhereOnTheMap = By.xpath(xpathGenerator("aria-roledescription", "map","/parent::div/parent::div"));
+    public By pricesOfCards_map = By.xpath(xpathGenerator("data-veloute", "map/markers/BasePillMarker", "/div/div/div/span"));
+    public By anyWhereOnTheMap = By.xpath(xpathGenerator("aria-roledescription", "map", "/parent::div/parent::div"));
+
+    //First result detailed page
+    public By guestsCheck_firstSearchResultPage = By.xpath(xpathGenerator("id", "GuestPicker-book_it-trigger"));
+
 
     /**
      * Method to build and return By Value for date selection criteria
@@ -101,6 +107,5 @@ public class UISelectors {
                     MonthCheckIn, dayCheckIn, MonthCheckOut, dayCheckOut);
         }
     }
-
 
 }

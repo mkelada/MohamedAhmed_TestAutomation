@@ -1,11 +1,16 @@
 package helpers;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.testng.Reporter;
 import utils.Environment;
 import utils.UITestBase;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -21,13 +26,53 @@ public class UIHelper extends UITestBase {
      */
     public void browserNavigation(String URL, By expectedElement) {
         environment.variables(Environment.currentEnvironment);
-        driver.get(environment.baseWebsiteURL + URL);
-        wait.until(ExpectedConditions.urlContains(URL));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(expectedElement));
+        getWebDriver().get(environment.baseWebsiteURL + URL);
+        getWebDriverWait().until(ExpectedConditions.urlContains(URL));
+        getWebDriverWait().until(ExpectedConditions.visibilityOfElementLocated(expectedElement));
+    }
+
+    public void takeScreenShot(String testName){
+
+        String fileWithPath = new File(System.getProperty("user.dir")).getAbsolutePath() + "/src/test/resources/Screenshots/";
+
+        //Convert web driver object to TakeScreenshot
+        File SrcFile = ((TakesScreenshot) getWebDriver()).getScreenshotAs(OutputType.FILE);
+
+        //Move image file to new destination
+        File DestFile = new File((String) fileWithPath + testName + ".png");
+
+        //Copy file at destination
+        try {
+            FileUtils.copyFile(SrcFile, DestFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //to appear in index.html / testng report
+        Reporter.log("<a href='" + DestFile.getAbsolutePath() + "'> <img src='" + DestFile.getAbsolutePath() + "' height='100' width='100'/> </a>");
+
     }
 
     public void close() {
-        driver.quit();
+        getWebDriver().quit();
+    }
+
+    public void controlCurrentTab() {
+        ArrayList<String> tabs2 = new ArrayList<>(getWebDriver().getWindowHandles());
+        getWebDriver().switchTo().window(tabs2.get(1));
+    }
+
+    public void backToPreviousPage() {
+        getWebDriver().navigate().back();
+    }
+
+    public void refreshPage() {
+        getWebDriver().navigate().refresh();
+    }
+
+    public void scrollDown() {
+        JavascriptExecutor js = (JavascriptExecutor) getWebDriver();
+        js.executeScript("window.scrollBy(0,2000)");
     }
 
     /**
@@ -39,28 +84,30 @@ public class UIHelper extends UITestBase {
      *                     or the number of clicks on the same element (if choose Click action)
      */
     public String actionsOnElementByXpath(By element, elementsActions uiActions, String... textOrClicks) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(element));
-        WebElement Element = driver.findElement(element);
-        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+        getWebDriverWait().until(ExpectedConditions.visibilityOfElementLocated(element));
+        WebElement Element = getWebDriver().findElement(element);
+        getWebDriver().manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
         if (uiActions.equals(elementsActions.CLICK)) {
-            wait.until(ExpectedConditions.elementToBeClickable(element));
-            if (textOrClicks.length > 0) {
-                for (int i = 0; i < Integer.parseInt(textOrClicks[0]); i++) {
+            try {
+                getWebDriverWait().until(ExpectedConditions.elementToBeClickable(element));
+                if (textOrClicks.length > 0) {
+                    for (int i = 0; i < Integer.parseInt(textOrClicks[0]); i++) {
+                        Element.click();
+                    }
+                } else {
                     Element.click();
                 }
-            } else {
+
+            } catch (StaleElementReferenceException e) {
                 Element.click();
             }
         } else if (uiActions.equals(elementsActions.SEND_KEYS)) {
             Element.clear();
-            driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+            getWebDriver().manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
             Element.sendKeys(textOrClicks);
         } else if (uiActions.equals(elementsActions.HOVER)) {
-            Actions actions = new Actions(driver);
+            Actions actions = new Actions(getWebDriver());
             actions.moveToElement(Element).perform();
-        } else if (uiActions.equals(elementsActions.SCROLL_DOWN)) {
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("arguments[0].scrollIntoView();", Element);
         } else if (uiActions.equals(elementsActions.GET_TEXT)) {
             return Element.getText();
         } else if (uiActions.equals(elementsActions.CLEAR_Text)) {
@@ -72,15 +119,15 @@ public class UIHelper extends UITestBase {
     }
 
     public List<WebElement> getElementsTexts(By element) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(element));
-        return driver.findElements(element);
+        getWebDriverWait().until(ExpectedConditions.visibilityOfElementLocated(element));
+        return getWebDriver().findElements(element);
     }
 
     public boolean validateTextOnElement(By element, String expectedText) {
         WebElement Element;
         try {
-            wait.until(ExpectedConditions.textToBe(element, expectedText));
-            Element = driver.findElement(element);
+            getWebDriverWait().until(ExpectedConditions.textToBe(element, expectedText));
+            Element = getWebDriver().findElement(element);
         } catch (Exception e) {
             return false;
         }
@@ -89,16 +136,16 @@ public class UIHelper extends UITestBase {
 
     public boolean validateElementAppearance(By element) {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(element));
+            getWebDriverWait().until(ExpectedConditions.visibilityOfElementLocated(element));
         } catch (Exception e) {
             return false;
         }
-        return driver.findElement(element).isDisplayed();
+        return getWebDriver().findElement(element).isDisplayed();
     }
 
     public boolean validateURL(String expectedText) {
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-        return driver.getCurrentUrl().contains(expectedText);
+        getWebDriver().manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        return getWebDriver().getCurrentUrl().contains(expectedText);
     }
 
     public enum elementsActions {
@@ -108,6 +155,5 @@ public class UIHelper extends UITestBase {
         GET_TEXT,
         CLEAR_Text,
         GET_STYLE,
-        SCROLL_DOWN
     }
 }
